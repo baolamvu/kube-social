@@ -1,0 +1,39 @@
+services:
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8080:8080"
+      - "5005:5005"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_NAME: ${DB_NAME:-kubesocial}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      JWT_SECRET: ${JWT_SECRET}
+    volumes:
+      - ../backend/src:/app/src
+      - ../backend/pom.xml:/app/pom.xml
+      - maven_cache:/root/.m2
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    develop:
+      watch:
+        - action: sync+restart
+          path: ../backend/src
+          target: /app/src
+        - action: sync+restart
+          path: ../backend/pom.xml
+          target: /app/pom.xml
+
+volumes:
+  maven_cache:
