@@ -1,10 +1,24 @@
+# syntax=docker/dockerfile:1
+
+# Development image: hot-reload (spring-boot-devtools) + remote JVM debug on 5005.
+# Source is bind-mounted by infra/docker-compose.dev.yml, so only pom.xml is baked
+# in here to pre-warm the dependency cache — src changes never rebuild this image.
 FROM maven:3.9-eclipse-temurin-21
 
 WORKDIR /app
 
+# Pre-download dependencies; cached until pom.xml changes.
 COPY pom.xml .
 RUN mvn dependency:go-offline -B
 
+# 8080 = HTTP, 5005 = JDWP remote debug.
 EXPOSE 8080 5005
 
-ENTRYPOINT ["mvn", "spring-boot:run", "-Dspring-boot.run.jvmArguments=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"]
+# Debug agent is passed via spring-boot.run.jvmArguments so it applies ONLY to the
+# forked application JVM (not the Maven JVM) — otherwise both would fight over 5005.
+# suspend=n → app starts without waiting for a debugger to attach.
+ENTRYPOINT ["mvn", "spring-boot:run", \
+  "-Dspring-boot.run.jvmArguments=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"]
+
+# NOTE: runs as root on purpose — matches the maven_cache -> /root/.m2 volume in
+# docker-compose.dev.yml. This image is for local dev only and never shipped.

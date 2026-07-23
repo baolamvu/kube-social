@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(docker compose *)"
+      "Bash(docker compose *)",
+      "Read(//home/lamvb/.m2/repository/org/springframework/boot/**)",
+      "Read(//home/lamvb/.m2/repository/org/springframework/boot/spring-boot-dependencies/**)"
     ]
   }
 }

@@ -54,3 +54,5 @@ Copy `.env.example` to `.env` and set `DB_USER`, `DB_PASSWORD`, `REDIS_PASSWORD`
 - Java/Spring backend only for now; frontend (Flutter or React Native, not yet decided/scaffolded) and infra CI/CD are designed in `documents/`/`claude/` but not yet implemented in this repo.
 - Any infrastructure/CI-CD diagrams added to docs must use Mermaid.js syntax (per `claude/03_kube_social_rules.md`).
 - Keep environment variables and hardcoded values clearly separated in Dockerfiles, docker-compose files, and GitHub workflow files.
+- When claude in plan mode, only plan and do not take any actions.
+- If better struture could be applied, modify files in documents folder if needed. It's for better excecution in the future.
