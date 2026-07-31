@@ -19,14 +19,20 @@ public class QuanLyThuVienService {
         this.listTaiLieu.remove(tailieu);
     }
 
-    public List<TaiLieu> getTaiLieuByType(String object) {
+    public List<TaiLieu> getTaiLieuByType(Class<? extends TaiLieu> classType) {
         ArrayList<TaiLieu> files = new ArrayList<>();
         for(TaiLieu tailieu: this.listTaiLieu) {
-            if (object.equals("sach") && tailieu instanceof Sach) {
+            if (classType.isInstance(tailieu)) {
                 files.add(tailieu);
             }
         }
         return files;
+    }
+
+    public List<TaiLieu> getTaiLieuByTypeNewVer(Class<? extends TaiLieu> classType) {
+        return this.listTaiLieu.stream()
+            .filter(classType::isInstance)
+            .toList();
     }
 
 }
